@@ -1,6 +1,6 @@
 
 #define SERIAL_DEVICE_MONITOR_IMPLEMENTATION
-#include "src/serial_device_monitor.h"
+#include "../../serial_device_monitor.h"
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
