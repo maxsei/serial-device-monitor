@@ -6,10 +6,6 @@ package serialdevicemonitor
 #include "serial_device_monitor.h"
 */
 import "C"
-import (
-	"bytes"
-	"io"
-)
 
 type Error C.serial_device_monitor_error
 
@@ -38,18 +34,15 @@ type Context struct {
 
 func (c *Context) Receive() (string, error) {
 	var devicePathBuffer [4096]byte
-	if err := Error(C.serial_device_monitor_receive(
-		c.ctx,
-		(*C.char)(C.CBytes(devicePathBuffer[:]))),
-	); !err.isNil() {
+	devicePathBufferC := (*C.char)(C.CBytes(devicePathBuffer[:]))
+	if err := Error(C.serial_device_monitor_receive(c.ctx, devicePathBufferC)); !err.isNil() {
 		return "", err
 	}
-	end := bytes.IndexByte(devicePathBuffer[:], 0)
-	ret := bytes.NewBuffer(nil)
-	if _, err := io.Copy(ret, bytes.NewBuffer(devicePathBuffer[:end])); err != nil {
-		return "", err
-	}
-	return ret.String(), nil
+	// XXX: Just being safe because I'm not sure I C.GoString allocates
+	tmp := C.GoString(devicePathBufferC)
+	ret := make([]byte, len(tmp))
+	copy(ret, []byte(tmp))
+	return string(ret), nil
 }
 
 func (c *Context) Deinit() {
