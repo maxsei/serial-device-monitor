@@ -1,0 +1,4 @@
+.project.gf
+*.vim
+bin/*
+!bin/.gitkeep

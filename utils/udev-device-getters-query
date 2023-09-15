@@ -1,0 +1,3 @@
+# run with: $ clang-query -f udev-device-getters-query ./main.c
+match functionDecl(
+    matchesName("udev_device_get_*"), returns(asString("const char *")))
