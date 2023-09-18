@@ -2,5 +2,5 @@
 
 set -ex
 
-go build -o /dev/null ./cmd/go-build
-go build -o ./bin/main_go -gcflags=all="-N -l" cmd/go/main.go
+go build -o /dev/null ./cmd/build-test
+go build -o ./bin/example -gcflags=all="-N -l" cmd/example/main.go
