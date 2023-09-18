@@ -53,15 +53,10 @@ type Monitor struct {
 	monitor *C.struct_udev_monitor
 }
 
-func (m *Monitor) Receive() (*Device, error) {
+func (m *Monitor) DeviceEvent() (*Device, error) {
 	for {
 		device := C.udev_monitor_receive_device(m.monitor)
 		if device == nil {
-			continue
-		}
-		action := C.GoString(C.udev_device_get_action(device))
-		if action != "add" {
-			C.udev_device_unref(device)
 			continue
 		}
 		return &Device{device}, nil
@@ -76,6 +71,17 @@ func (m *Monitor) Deinit() {
 
 type Device struct {
 	device *C.struct_udev_device
+}
+
+var (
+	ActionAdd    = "add"
+	ActionRemove = "remove"
+)
+
+type Action string
+
+func (d *Device) Action() Action {
+	return Action(C.GoString(C.udev_device_get_action(d.device)))
 }
 
 func (d *Device) DeviceNode() string {

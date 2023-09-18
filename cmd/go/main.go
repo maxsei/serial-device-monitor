@@ -27,9 +27,19 @@ func main() {
 		log.Panic(err)
 	}
 	defer m.Deinit()
-	device, err := m.Receive()
-	if err != nil {
-		log.Panic(err)
+	var device *serialdevicemonitor.Device
+	for {
+		device, err = m.DeviceEvent()
+		if err != nil {
+			log.Panic(err)
+		}
+		action := device.Action()
+		log.Infof("got action %s from devpath %s", action, device.DeviceNode())
+		if action != "add" {
+			device.Deinit()
+			continue
+		}
+		break
 	}
 	defer device.Deinit()
 	devpath := device.DeviceNode()
