@@ -20,7 +20,7 @@ typedef enum {
   serial_device_monitor_error_udev_mon_init,
   serial_device_monitor_error_add_subsys_filter,
   serial_device_monitor_error_mon_enable_failed,
-  /* serial_device_monitor_error_device_recieve_failed */
+  serial_device_monitor_error_device_recieve_failed
 } serial_device_monitor_error;
 extern const char *
 serial_device_monitor_error_string(serial_device_monitor_error err);
@@ -64,8 +64,8 @@ serial_device_monitor_error_string(serial_device_monitor_error err) {
            "filter to monitor";
   case serial_device_monitor_error_mon_enable_failed:
     return "failed to add enable monitor";
-  /* case serial_device_monitor_error_device_recieve_failed: */
-  /*   return "failed to add device filter to monitor"; */
+  case serial_device_monitor_error_device_recieve_failed:
+    return "failed to add receive device";
   default:
     return "unkown error";
   }
