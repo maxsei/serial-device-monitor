@@ -92,12 +92,12 @@ func (d *Device) Action() Action {
 	return Action(C.GoString(C.udev_device_get_action(d.device)))
 }
 
+func (d *Device) Syspath() string {
+	return C.GoString(C.udev_device_get_syspath(d.device))
+}
+
 func (d *Device) DeviceNode() string {
-	devnode := C.udev_device_get_devnode(d.device)
-	if devnode == nil {
-		return ""
-	}
-	return C.GoString(devnode)
+	return C.GoString(C.udev_device_get_devnode(d.device))
 }
 
 func (d *Device) Properties() map[string]string {
