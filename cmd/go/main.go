@@ -7,7 +7,7 @@ import (
 
 func main() {
 	log := logrus.New()
-	ctx, err := serialdevicemonitor.Init()
+	ctx, err := serialdevicemonitor.NewMonitor()
 	if err != nil {
 		log.Panic(err)
 	}

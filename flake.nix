@@ -12,12 +12,7 @@
         lib = nixpkgs.lib;
       in rec {
         devShells.default = with pkgs;
-          mkShell {
-            nativeBuildInputs = [ gf udev pkg-config clang_16 ];
-            shellHook = ''
-              export PATH="${clang-tools_16}/bin:$PATH"
-            '';
-          };
+          mkShell { nativeBuildInputs = [ gf udev pkg-config ]; };
         devShell = self.devShells.${system}.default;
       });
 }
