@@ -54,7 +54,7 @@ type Monitor struct {
 }
 
 func (m *Monitor) Receive() (*Device, error) {
-	for true {
+	for {
 		device := C.udev_monitor_receive_device(m.monitor)
 		if device == nil {
 			continue
@@ -66,7 +66,6 @@ func (m *Monitor) Receive() (*Device, error) {
 		}
 		return &Device{device}, nil
 	}
-	panic("unreachable")
 }
 
 func (m *Monitor) Deinit() {
