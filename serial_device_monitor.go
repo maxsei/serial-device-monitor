@@ -38,11 +38,7 @@ func (c *Context) Receive() (string, error) {
 	if err := Error(C.serial_device_monitor_receive(c.ctx, devicePathBufferC)); !err.isNil() {
 		return "", err
 	}
-	// XXX: Just being safe because I'm not sure if C.GoString allocates
-	tmp := C.GoString(devicePathBufferC)
-	ret := make([]byte, len(tmp))
-	copy(ret, []byte(tmp))
-	return string(ret), nil
+	return C.GoString(devicePathBufferC), nil
 }
 
 func (c *Context) Deinit() {
