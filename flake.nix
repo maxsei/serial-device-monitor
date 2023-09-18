@@ -12,7 +12,7 @@
         lib = nixpkgs.lib;
       in rec {
         devShells.default = with pkgs;
-          mkShell { nativeBuildInputs = [ gf udev pkg-config ]; };
+          mkShell { nativeBuildInputs = [ gf udev pkg-config go_1_18 ]; };
         devShell = self.devShells.${system}.default;
       });
 }
