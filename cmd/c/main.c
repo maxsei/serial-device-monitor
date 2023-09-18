@@ -12,15 +12,17 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  char device_path[4096] = {0};
-  err = serial_device_monitor_receive(&ctx, device_path);
+  struct udev_device *device;
+  err = serial_device_monitor_receive(&ctx, &device);
   if (err) {
     serial_device_monitor_deinit(&ctx);
     fprintf(stderr, "%s\n", serial_device_monitor_error_string(err));
     return 1;
   }
-  printf("%s\n", device_path);
+  const char *device_path = udev_device_get_devnode(device);
+  printf("device path = %s\n", device_path);
 
   serial_device_monitor_deinit(&ctx);
+  udev_device_unref(device);
   return 0;
 }

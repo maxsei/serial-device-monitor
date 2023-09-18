@@ -15,7 +15,7 @@ extern "C" {
 
 typedef enum {
   serial_device_monitor_error_nil,
-  serial_device_monitor_error_null_device_path,
+  serial_device_monitor_error_null_device,
   serial_device_monitor_error_udev_ctx_init,
   serial_device_monitor_error_udev_mon_init,
   serial_device_monitor_error_add_subsys_filter,
@@ -34,10 +34,9 @@ typedef struct serial_device_monitor_context {
 extern serial_device_monitor_error
 serial_device_monitor_init(serial_device_monitor_context *context);
 
-extern serial_device_monitor_error
+serial_device_monitor_error
 serial_device_monitor_receive(serial_device_monitor_context *context,
-                              char *device_path);
-
+                              struct udev_device **out);
 extern void
 serial_device_monitor_deinit(serial_device_monitor_context *context);
 
@@ -54,8 +53,8 @@ serial_device_monitor_error_string(serial_device_monitor_error err) {
   switch (err) {
   case serial_device_monitor_error_nil:
     return "<nil>";
-  case serial_device_monitor_error_null_device_path:
-    return "provided null device path";
+  case serial_device_monitor_error_null_device:
+    return "provided null device";
   case serial_device_monitor_error_udev_ctx_init:
     return "failed to create udev context";
   case serial_device_monitor_error_udev_mon_init:
@@ -110,9 +109,9 @@ serial_device_monitor_init(serial_device_monitor_context *context) {
 
 serial_device_monitor_error
 serial_device_monitor_receive(serial_device_monitor_context *context,
-                              char *device_path) {
-  if (device_path == NULL)
-    return serial_device_monitor_error_null_device_path;
+                              struct udev_device **out) {
+  if (out == NULL)
+    return serial_device_monitor_error_null_device;
   while (1) {
     struct udev_device *device = udev_monitor_receive_device(context->monitor);
     if (device == NULL)
@@ -123,12 +122,12 @@ serial_device_monitor_receive(serial_device_monitor_context *context,
       udev_device_unref(device);
       continue;
     }
-    const char *devnode = udev_device_get_devnode(device);
+    *out = device;
     /* if (!is_tty(devnode)) { */
     /*   udev_device_unref(device); */
     /*   continue; */
     /* } */
-    strcpy(device_path, devnode);
+    /* strcpy(device_path, devnode); */
     return serial_device_monitor_error_nil;
   }
 }
