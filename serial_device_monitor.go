@@ -81,6 +81,14 @@ type Device struct {
 	device *C.struct_udev_device
 }
 
+func (d *Device) Clone() (*Device, error) {
+	device := C.udev_device_ref(d.device)
+	if device == nil {
+		return nil, errors.New("failed to clone device")
+	}
+	return &Device{device}, nil
+}
+
 var (
 	ActionAdd    Action = "add"
 	ActionRemove Action = "remove"
