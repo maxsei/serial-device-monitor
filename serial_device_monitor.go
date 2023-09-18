@@ -32,15 +32,41 @@ type Context struct {
 	ctx *C.serial_device_monitor_context
 }
 
-func (c *Context) Receive() (string, error) {
-	var devicePathBuffer [4096]byte
-	devicePathBufferC := (*C.char)(C.CBytes(devicePathBuffer[:]))
-	if err := Error(C.serial_device_monitor_receive(c.ctx, devicePathBufferC)); !err.isNil() {
-		return "", err
+func (c *Context) Receive() (*Device, error) {
+	var device *C.struct_udev_device
+	if err := Error(C.serial_device_monitor_receive(c.ctx, (**C.struct_udev_device)(&device))); !err.isNil() {
+		return nil, err
 	}
-	return C.GoString(devicePathBufferC), nil
+	return &Device{device}, nil
 }
 
 func (c *Context) Deinit() {
 	C.serial_device_monitor_deinit(c.ctx)
+}
+
+type Device struct {
+	device *C.struct_udev_device
+}
+
+func (d Device) DeviceNode() string {
+	devnode := C.udev_device_get_devnode(d.device)
+	if devnode == nil {
+		return ""
+	}
+	return C.GoString(devnode)
+}
+
+func (d Device) Properties() map[string]string {
+	ret := make(map[string]string)
+	for entry := C.udev_device_get_properties_list_entry(d.device); entry != nil ; entry = C.udev_list_entry_get_next(entry) {
+		k := C.udev_list_entry_get_name(entry);
+		v := C.udev_list_entry_get_value(entry);
+		ret[C.GoString(k)] = C.GoString(v)
+	}
+	return ret
+}
+
+
+func (d *Device) Deinit() {
+	C.udev_device_unref(d.device)
 }
