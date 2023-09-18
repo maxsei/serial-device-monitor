@@ -95,18 +95,6 @@ serial_device_monitor_init(serial_device_monitor_context *context) {
   return serial_device_monitor_error_nil;
 }
 
-/* bool is_tty(const char *devnode) { */
-/*   struct stat st; */
-/*   if (stat(devnode, &st) == -1) */
-/*     return false; */
-/*   if (!S_ISCHR(st.st_mode)) */
-/*     return false; */
-/*   int fd = open(devnode, O_RDONLY); */
-/*   int rc = isatty(fd); */
-/*   close(fd); */
-/*   return rc; */
-/* } */
-
 serial_device_monitor_error
 serial_device_monitor_receive(serial_device_monitor_context *context,
                               struct udev_device **out) {
@@ -115,19 +103,13 @@ serial_device_monitor_receive(serial_device_monitor_context *context,
   while (1) {
     struct udev_device *device = udev_monitor_receive_device(context->monitor);
     if (device == NULL)
-      continue;
-    /* return serial_device_monitor_error_device_recieve_failed; */
+      return serial_device_monitor_error_device_recieve_failed;
     const char *action = udev_device_get_action(device);
     if (strcmp(action, "add") != 0) {
       udev_device_unref(device);
       continue;
     }
     *out = device;
-    /* if (!is_tty(devnode)) { */
-    /*   udev_device_unref(device); */
-    /*   continue; */
-    /* } */
-    /* strcpy(device_path, devnode); */
     return serial_device_monitor_error_nil;
   }
 }
@@ -139,7 +121,6 @@ void serial_device_monitor_deinit(serial_device_monitor_context *context) {
     udev_monitor_unref(context->monitor);
   if (context->udev != NULL)
     udev_unref(context->udev);
-  /* context = NULL; */
 }
 
 #endif
