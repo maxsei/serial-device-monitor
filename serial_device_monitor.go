@@ -69,6 +69,14 @@ func (m *Monitor) Deinit() {
 	}
 }
 
+func NewDeviceFromSyspath(c *Context, p string) (*Device, error) {
+	device := C.udev_device_new_from_syspath(c.udev, C.CString(p))
+	if device == nil {
+		return nil, errors.New("no such device with path")
+	}
+	return &Device{device}, nil
+}
+
 type Device struct {
 	device *C.struct_udev_device
 }
