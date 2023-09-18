@@ -74,8 +74,8 @@ type Device struct {
 }
 
 var (
-	ActionAdd    = "add"
-	ActionRemove = "remove"
+	ActionAdd    Action = "add"
+	ActionRemove Action = "remove"
 )
 
 type Action string
