@@ -54,13 +54,11 @@ type Monitor struct {
 }
 
 func (m *Monitor) DeviceEvent() (*Device, error) {
-	for {
-		device := C.udev_monitor_receive_device(m.monitor)
-		if device == nil {
-			continue
-		}
-		return &Device{device}, nil
+	device := C.udev_monitor_receive_device(m.monitor)
+	if device == nil {
+		return nil, errors.New("failed to receive device")
 	}
+	return &Device{device}, nil
 }
 
 func (m *Monitor) Deinit() {
